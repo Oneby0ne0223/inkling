@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Inkling</title>
+  <meta name="description" content="One drawing prompt at a time, to answer on paper.">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#F6F1E7" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#1A1B1E" media="(prefers-color-scheme: dark)">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Inkling">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <noscript>
+    <main class="screen"><h1 class="prompt">Inkling needs JavaScript to show today&rsquo;s prompt.</h1></main>
+  </noscript>
+
+  <!-- 1. Welcome -->
+  <main class="screen" id="s-welcome" hidden aria-labelledby="welcome-title">
+    <div class="welcome-body">
+      <h1 class="brand" id="welcome-title">Inkling</h1>
+      <svg class="squiggle" viewBox="0 0 120 14" fill="none" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M3 9 C 18 2, 34 14, 52 7 S 88 2, 117 8"/></svg>
+      <p class="lede">One drawing prompt at a time, to answer on paper.</p>
+      <p>Before you begin, find some paper, or a sketchbook, and a pen or pencil you like. That will be your space.</p>
+      <p>This app only holds the prompts. What you draw stays on paper, and it&rsquo;s yours alone.</p>
+    </div>
+    <div class="actions">
+      <button type="button" class="btn primary" data-go="#setup">Continue</button>
+    </div>
+  </main>
+
+  <!-- 2. First setup -->
+  <main class="screen" id="s-setup" hidden aria-labelledby="setup-title">
+    <h1 class="heading" id="setup-title">A few small choices</h1>
+    <p class="hint">You can change these any time in Settings.</p>
+    <form id="setup-form" class="form" novalidate></form>
+    <div class="actions">
+      <button type="button" class="btn primary" id="setup-start">Start</button>
+      <button type="button" class="btn quiet" id="setup-skip">Skip, the defaults are fine</button>
+    </div>
+  </main>
+
+  <!-- 3. Reminder offer (shown once after setup) -->
+  <main class="screen" id="s-remind" hidden aria-labelledby="remind-title">
+    <h1 class="heading" id="remind-title">A reminder, if you like</h1>
+    <p>Inkling can&rsquo;t send notifications by itself. If you&rsquo;d like a nudge, you can add a daily reminder to your phone&rsquo;s calendar.</p>
+    <ol class="steps">
+      <li>Tap the button. Your phone downloads a small calendar file.</li>
+      <li>Open it, and choose to add the events to your calendar.</li>
+    </ol>
+    <div class="stack">
+      <button type="button" class="btn" data-action="add-reminders">Add reminders to my calendar</button>
+      <p class="status" data-role="reminder-status" role="status"></p>
+      <button type="button" class="btn" data-action="install" hidden>Install the app</button>
+      <p class="hint" data-role="install-hint"></p>
+    </div>
+    <div class="actions">
+      <button type="button" class="btn primary" data-go="#today">Show my first prompt</button>
+    </div>
+  </main>
+
+  <!-- 4. Today -->
+  <main class="screen" id="s-today" hidden aria-labelledby="prompt-text">
+    <header class="topbar">
+      <span class="wordmark">Inkling</span>
+      <a class="icon-btn" href="#settings" aria-label="Settings">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 7h9M17 7h3M4 17h3M11 17h9" /><circle cx="15" cy="7" r="2" /><circle cx="9" cy="17" r="2" /></svg>
+      </a>
+    </header>
+
+    <section class="prompt-card">
+      <p class="eyebrow"><span class="dot" id="theme-dot" aria-hidden="true"></span><span id="theme-name"></span></p>
+      <h1 class="prompt" id="prompt-text"></h1>
+      <p class="meta" id="prompt-meta"></p>
+    </section>
+
+    <section class="timer" aria-label="Timer">
+      <div id="timer-idle">
+        <button type="button" class="btn primary" id="timer-start">Start timer</button>
+      </div>
+      <div id="timer-running" hidden>
+        <p class="clock" id="timer-clock" role="timer">00:00</p>
+        <button type="button" class="btn" id="timer-stop">Stop</button>
+      </div>
+      <div id="timer-done" hidden>
+        <p class="done-msg" id="timer-done-msg" role="status">Time. Pencils down, or keep going.</p>
+        <button type="button" class="btn" id="timer-reset">OK</button>
+      </div>
+    </section>
+
+    <div class="actions">
+      <button type="button" class="btn quiet" id="skip">Not today, another one</button>
+    </div>
+    <p class="foot">Draw it on paper. This app never sees your drawing.</p>
+  </main>
+
+  <!-- 5. Settings -->
+  <main class="screen" id="s-settings" hidden aria-labelledby="settings-title">
+    <header class="topbar">
+      <a class="icon-btn" href="#today" aria-label="Back to today&rsquo;s prompt">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M15 5l-7 7 7 7" /></svg>
+      </a>
+      <h1 class="topbar-title" id="settings-title">Settings</h1>
+      <span class="icon-btn spacer" aria-hidden="true"></span>
+    </header>
+
+    <form id="settings-form" class="form" novalidate></form>
+
+    <section class="block" aria-labelledby="rem-title">
+      <h2 id="rem-title">Reminders</h2>
+      <p class="warn" data-role="stale-note" hidden>You changed the times. Delete the old &ldquo;Time to draw (Inkling)&rdquo; events from your calendar, then add the new ones.</p>
+      <p class="hint">The reminder comes from your phone&rsquo;s calendar. Tap it to open Inkling. To change the times later, delete the old events and add the new ones.</p>
+      <button type="button" class="btn" data-action="add-reminders">Add reminders to my calendar</button>
+      <p class="status" data-role="reminder-status" role="status"></p>
+    </section>
+
+    <section class="block" aria-labelledby="inst-title">
+      <h2 id="inst-title">Install</h2>
+      <button type="button" class="btn" data-action="install" hidden>Install the app</button>
+      <p class="hint" data-role="install-hint"></p>
+    </section>
+
+    <section class="block">
+      <button type="button" class="btn quiet" data-go="#welcome">Re-read the welcome</button>
+      <button type="button" class="btn quiet" data-go="#about">About &amp; privacy</button>
+    </section>
+  </main>
+
+  <!-- 6. About -->
+  <main class="screen" id="s-about" hidden aria-labelledby="about-title">
+    <header class="topbar">
+      <a class="icon-btn" href="#settings" aria-label="Back to settings">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M15 5l-7 7 7 7" /></svg>
+      </a>
+      <h1 class="topbar-title" id="about-title">About &amp; privacy</h1>
+      <span class="icon-btn spacer" aria-hidden="true"></span>
+    </header>
+
+    <article class="prose">
+      <h2>What this is</h2>
+      <p>Inkling is a small personal project: one drawing prompt at a time, for you to answer on paper. It is free, and has no accounts, no ads and no tracking.</p>
+
+      <h2>What is stored, and where</h2>
+      <p>Only what the app needs to work, in your browser&rsquo;s local storage on your own device:</p>
+      <ul>
+        <li>your settings: how many drawings a day, their times, and the timer length;</li>
+        <li>whether you&rsquo;ve seen the welcome, and whether you&rsquo;ve added the reminders;</li>
+        <li>your &ldquo;Not today, another one&rdquo; choice for the current prompt.</li>
+      </ul>
+      <p>To work offline, your browser also keeps a copy of the app&rsquo;s own files. None of this is sent anywhere. To delete it, uninstall the app or clear this site&rsquo;s data in your browser settings.</p>
+
+      <h2>What you draw</h2>
+      <p>It stays on paper. The app never asks for it, and never uses your camera or microphone.</p>
+
+      <h2>Hosting and reminders</h2>
+      <p>Wherever this page is hosted may log technical data, such as IP addresses, for security. The calendar file is made on your device and goes only to the calendar app you open it with.</p>
+
+      <h2>Use as is</h2>
+      <p>Offered as is, without warranties.</p>
+    </article>
+  </main>
+
+  <script src="prompts.js"></script>
+  <script src="logic.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
